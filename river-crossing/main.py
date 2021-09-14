@@ -10,7 +10,7 @@ def is_valid(state):
 
 
 def is_goal(state):
-    return len(state.split('|')[0]) == 0
+    return state.split('|')[0] == ''
 
 
 def sort_string(str):
