@@ -31,7 +31,7 @@ def test_move():
 def test_next():
     # Test the functionality of the next function.
 
-    assert next('CFGW|') == ['CGW|F', 'GW|CF', 'CW|FG', 'CG|FW']
+    assert next('CFGW|') == ['GW|CF', 'CGW|F',  'CW|FG', 'CG|FW']
     assert next('F|CGW') == ['|CFGW']
     assert next('C|FGW') == ['CF|GW', 'CFG|W', 'CFW|G']
 
