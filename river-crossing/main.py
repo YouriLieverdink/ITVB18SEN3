@@ -56,10 +56,6 @@ def forward(state, history):
             forward(s, history + [s])
 
 
-def main():
+if __name__ == "__main__":
     state = 'FCGW|'
     forward(state, [state])
-
-
-if __name__ == "__main__":
-    main()
