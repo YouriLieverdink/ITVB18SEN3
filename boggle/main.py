@@ -30,7 +30,7 @@ def dfs(cursor, board, word, prefixes, words):
             dfs(c, board, value, prefixes, words)
 
 
-def main():
+if __name__ == '__main__':
     prefixes = set()
 
     words = open('./assets/words.txt').read().split()
@@ -42,7 +42,3 @@ def main():
     for x in range(4):
         for y in range(4):
             dfs([x, y], BOARD, '', prefixes, words)
-
-
-if __name__ == '__main__':
-    main()
