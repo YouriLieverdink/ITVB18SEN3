@@ -14,6 +14,7 @@ def is_goal(state):
 
 
 def sort_string(str):
+    # Reference: https://stackoverflow.com/a/15046263/16799596
     return ''.join(sorted(str))
 
 
