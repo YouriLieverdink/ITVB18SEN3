@@ -58,5 +58,7 @@ def forward(state, history):
 
 
 if __name__ == "__main__":
+    # Time complexity is O(n)
+
     state = 'FCGW|'
     forward(state, [state])
