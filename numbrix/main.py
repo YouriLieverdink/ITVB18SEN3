@@ -33,7 +33,7 @@ def print_board(value, cursor):
             else:
                 print(' ' + str(cell), end=' ')
 
-    print('')
+    print('\n')
 
 
 def neighbours(cursor, n):
@@ -91,5 +91,4 @@ if __name__ == '__main__':
     # Start
     board, cursor = parse_board(BOARD)
 
-    result = dfs(cursor, board, set(), len(board), 1)
-    print(result)
+    dfs(cursor, board, set(), len(board), 1)
