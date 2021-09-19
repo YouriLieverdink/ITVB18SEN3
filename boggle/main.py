@@ -37,7 +37,10 @@ if __name__ == '__main__':
 
     for word in words:
         for i in range(len(word)):
-            prefixes.add(word[:i])
+            prefix = word[:i]
+
+            if prefix not in prefixes:
+                prefixes.add(word[:i])
 
     for x in range(4):
         for y in range(4):
