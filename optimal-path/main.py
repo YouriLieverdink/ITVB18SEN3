@@ -70,8 +70,12 @@ class MainApp(tk.Frame):
         y0 = node[1]*cf.CELL - 4
         x1 = x0 + 8 + 1
         y1 = y0 + 8 + 1
+
         self.canvas.create_rectangle(
             x0+cf.TR, y0+cf.TR, x1+cf.TR, y1+cf.TR, fill=color)
+
+        # self.canvas.create_text(
+        #     x0+cf.TR, y0+cf.TR, text=mo.get_grid_value(node), fill='purple')
 
     def make_control_panel(self):
         # note: self.alg is an instance variable, and lf1 is a local variable
