@@ -17,17 +17,23 @@ def neighbours(cursor, n):
     return cursors
 
 
-def dfs(cursor, board, word, prefixes, words):
+def dfs(cursor, board, word, prefixes, words, visited):
 
-    value = word + board[cursor[0]][cursor[1]]
+    value = board[cursor[0]][cursor[1]]
 
-    if value in words:
-        print(value)
+    if value in visited:
+        return
 
-    if value in prefixes:
+    visited.add(value)
+    new_word = word + value
+
+    if new_word in words:
+        print(new_word)
+
+    if new_word in prefixes:
         # Search the neighbours
         for c in neighbours(cursor, len(board)):
-            dfs(c, board, value, prefixes, words)
+            dfs(c, board, new_word, prefixes, words, visited)
 
 
 if __name__ == '__main__':
@@ -44,4 +50,4 @@ if __name__ == '__main__':
 
     for x in range(4):
         for y in range(4):
-            dfs([x, y], BOARD, '', prefixes, words)
+            dfs([x, y], BOARD, '', prefixes, words, set())
