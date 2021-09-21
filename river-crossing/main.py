@@ -48,17 +48,23 @@ def next(state):
     return states
 
 
-def forward(state, history):
+def forward(state, history, path=[]):
+    path = path + [state]
+
     if is_goal(state):
-        return print(history)
+        return [path]
+
+    paths = []
 
     for s in next(state):
         if is_valid(s) and s not in history:
-            forward(s, history + [s])
+
+            for path in forward(s, history + [s], path):
+                paths.append(path)
+
+    return paths
 
 
 if __name__ == "__main__":
-    # Time complexity is O(n)
-
     state = 'FCGW|'
-    forward(state, [state])
+    print(forward(state, [state]))
