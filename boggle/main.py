@@ -1,9 +1,4 @@
-BOARD = [
-    ['p', 'i', 'e', 't'],
-    ['g', 'a', 'a', 't'],
-    ['a', 't', 'm', 's'],
-    ['h', 'u', 'i', 's'],
-]
+from constants import BOARD
 
 
 def neighbours(cursor, n):
@@ -37,17 +32,14 @@ def dfs(cursor, board, word, prefixes, words, visited):
 
 
 if __name__ == '__main__':
-    prefixes = set()
-
-    words = open('./assets/words.txt').read().split()
+    prefixes, words = set(), open('./assets/words.txt').read().split()
 
     for word in words:
         for i in range(len(word)):
-            prefix = word[:i]
+            prefixes.add(word[:i])
 
-            if prefix not in prefixes:
-                prefixes.add(word[:i])
+    n = len(BOARD)
 
-    for x in range(4):
-        for y in range(4):
+    for x in range(n):
+        for y in range(n):
             dfs([x, y], BOARD, '', prefixes, words, set())
