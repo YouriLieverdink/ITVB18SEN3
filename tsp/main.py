@@ -33,17 +33,11 @@ def alltours(cities: Set) -> List[List[City]]:
 
 def nearest_neighbour(cities: FrozenSet) -> List[City]:
     # Perform the 'Nearest Neighbour, NN' algorithm.
-    city = next(iter(cities))
-    tour, seen = [city], {city}
+    tour = [next(iter(cities))]
 
-    while cities.difference(seen):
-        # Retrieve the current and calculate the closest city.
+    while diff := cities.difference({*tour}):
         cur = tour.pop()
-        nex = min(cities.difference(seen), key=lambda k: distance(cur, k))
-
-        # Update the tour and seen.
-        tour = tour + [cur, nex]
-        seen.add(nex)
+        tour.extend([cur, min(diff, key=lambda k: distance(cur, k))])
 
     return tour
 
@@ -89,5 +83,5 @@ def plot_tsp(algorithm, cities):
 
 if __name__ == '__main__':
     # Plot the TSP algorithm.
-    # plot_tsp(nearest_neighbour, make_cities(10))  # 0.00004400 seconds
-    plot_tsp(nearest_neighbour, make_cities(500))  # 0.06097600 seconds
+    plot_tsp(nearest_neighbour, make_cities(10))  # 0.00004400 seconds
+    # plot_tsp(nearest_neighbour, make_cities(500))  # 0.06097600 seconds
