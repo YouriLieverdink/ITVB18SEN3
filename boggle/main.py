@@ -1,6 +1,18 @@
 from constants import BOARD
 
 
+def read_file():
+    # Reads the words from file and creates a set of prefixes.
+    prefixes, words = set(), open('./assets/words.txt').read().split()
+
+    # Create prefixes for all the words.
+    for word in words:
+        for i in range(len(word)):
+            prefixes.add(word[:i])
+
+    return (prefixes, words)
+
+
 def neighbours(p, n):
     # Returns the neighbours of the provided position.
     positions = []
@@ -41,14 +53,7 @@ def dfs(p, board, prefixes, word, words, visited):
 
 
 if __name__ == '__main__':
-    # Create a set for the prefixes and load the words.
-    prefixes, words = set(), open('./assets/words.txt').read().split()
-
-    # Create prefixes for all the words.
-    for word in words:
-        for i in range(len(word)):
-            prefixes.add(word[:i])
-
+    prefixes, words = read_file()
     n = len(BOARD)
 
     # Start the DFS algorithm from every position on the board.
