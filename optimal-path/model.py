@@ -95,7 +95,7 @@ def search(app, start, goal):
 
 def heuristic(node, goal):
     # Calculates the heuristic based on the current node and goal.
-    return (goal[0] * goal[1]) - (node[0] * node[1])
+    return (goal[0] + goal[1]) - (node[0] + node[1])
 
 
 def neighbours(node):
