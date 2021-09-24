@@ -29,7 +29,7 @@ def neighbours(p, n):
     return positions
 
 
-def dfs(p, board, prefixes, word, words, visited):
+def dfs(p, board, prefixes, word, words, visited, found):
     # Performs the deep first search algorithm to find words.
     if str(p) not in visited:
         # Continue if the item has not been visited before.
@@ -40,13 +40,13 @@ def dfs(p, board, prefixes, word, words, visited):
 
         # Check if the word is valid.
         if word in words:
-            print(word)
+            found.add(word)
 
         # Continue searching when the word matches a prefix.
         if word in prefixes:
             # Search the neighbours of the current position.
             for n in neighbours(p, len(board)):
-                dfs(n, board, prefixes, word, words, visited)
+                dfs(n, board, prefixes, word, words, visited, found)
 
         # Remove the position when nothing matched.
         visited.remove(str(p))
@@ -54,9 +54,11 @@ def dfs(p, board, prefixes, word, words, visited):
 
 if __name__ == '__main__':
     prefixes, words = read_file()
-    n = len(BOARD)
+    n, found = len(BOARD), set()
 
     # Start the DFS algorithm from every position on the board.
     for x in range(n):
         for y in range(n):
-            dfs([x, y], BOARD, prefixes, '', words, set())
+            dfs([x, y], BOARD, prefixes, '', words, set(), found)
+
+    print(found)
