@@ -1,57 +1,26 @@
 import itertools
-import math
 import random
 import time
-from collections import namedtuple
-from typing import FrozenSet, List, Set
+from typing import FrozenSet, List
 
 import matplotlib.pyplot as plt
 
-# based on Peter Norvig's IPython Notebook on the TSP
+from intersect import distance, do_intersect
+from models import Point, Segment
 
-City = namedtuple('City', 'x y')
-
-
-def distance(A: City, B: City) -> float:
-    # Return the distance between A and B.
-    return math.hypot(A.x - B.x, A.y - B.y)
+# Helper functions.
 
 
-def try_all_tours(cities: Set) -> List[City]:
-    # generate and test all possible tours of the cities and choose the shortest tour
-    tours = alltours(cities)
-    return min(tours, key=tour_length)
-
-
-def alltours(cities: Set) -> List[List[City]]:
-    # return a list of tours (a list of lists), each tour a permutation of cities,
-    # and each one starting with the same city
-    # note: cities is a set, sets don't support indexing
-    start = next(iter(cities))
-    return [[start] + list(rest) for rest in itertools.permutations(cities - {start})]
-
-
-def nearest_neighbour(cities: FrozenSet) -> List[City]:
-    # Perform the 'Nearest Neighbour, NN' algorithm.
-    tour = [next(iter(cities))]
-
-    while diff := cities.difference({*tour}):
-        cur = tour.pop()
-        tour.extend([cur, min(diff, key=lambda k: distance(cur, k))])
-
-    return tour
-
-
-def tour_length(tour):
-    # the total of distances between each pair of consecutive cities in the tour
+def length(tour: List[Point]) -> float:
+    # Returns the length between the points in the tour.
     return sum(distance(tour[i], tour[i-1]) for i in range(len(tour)))
 
 
 def make_cities(n, width=1000, height=1000):
     # Make a set of (n) cities where each has random coordinates.
-    random.seed()
+    random.seed(63)
 
-    return frozenset(City(random.randrange(width), random.randrange(height)) for c in range(n))
+    return frozenset(Point(random.randrange(width), random.randrange(height)) for c in range(n))
 
 
 def plot_tour(tour):
@@ -72,8 +41,8 @@ def plot_tsp(algorithm, cities):
     t1 = time.process_time()
 
     print(
-        "{} city tour with length {:.1f} in {:.3f} secs for {}"
-        .format(len(tour), tour_length(tour), t1 - t0, algorithm.__name__)
+        "{} city tour with length {:.1f} in {:.16f} secs for {}"
+        .format(len(tour), length(tour), t1 - t0, algorithm.__name__)
     )
 
     print("Start plotting ...")
@@ -81,7 +50,91 @@ def plot_tsp(algorithm, cities):
     plot_tour(tour)
 
 
+# Algorithms.
+
+
+def brute_force(cities: FrozenSet[Point]) -> List[Point]:
+    # Use brute force to find the optimal path.
+    start = next(iter(cities))
+    tours = [
+        [start] + list(rest) for rest in itertools.permutations(cities - {start})
+    ]
+
+    return min(tours, key=length)
+
+
+def nearest_neighbour(cities: FrozenSet[Point]) -> List[Point]:
+    # Use the NN algorithm to find a guess of the optimal path.
+    tour = [next(iter(cities))]
+
+    while diff := cities.difference({*tour}):
+        cur = tour.pop()
+        tour.extend([cur, min(diff, key=lambda k: distance(cur, k))])
+
+    return tour
+
+
+def two_opt(cities: FrozenSet[Point]) -> List[Point]:
+    # Use the NN algorithm combined with k-opt to find an improved guess of the optimal path.
+    tour = nearest_neighbour(cities)
+    best, n = tour, len(tour)
+
+    iterations, improved = 200, True
+
+    while improved and iterations > 0:
+        # Update the number of iterations.
+        iterations -= 1
+        improved = False
+
+        # Create segments using the current best tour.
+        segments: List[Segment] = []
+
+        for x in range(n):
+            segments.append(Segment(best[x], best[(x + 1) % n]))
+
+        # Walk through every segment combination.
+        for s1 in segments:
+            for s2 in segments:
+                # Don't compare the segment to itself.
+                if s1 == s2:
+                    continue
+
+                # Check whether the segments intersect.
+                if do_intersect(s1.p1, s1.p2, s2.p1, s2.p2):
+                    s1p1 = best.index(s1.p1)
+                    s1p2 = best.index(s1.p2)
+
+                    # Swap the cities.
+                    new_tour = best[:]
+                    new_tour[s1p1], new_tour[s1p2] = new_tour[s1p2], new_tour[s1p1]
+
+                    # Check whether the tour became shorter.
+                    if length(new_tour) < length(best):
+                        improved = True
+                        best = new_tour
+
+    print('i:', 200 - iterations)
+
+    return best
+
+
 if __name__ == '__main__':
     # Plot the TSP algorithm.
-    plot_tsp(nearest_neighbour, make_cities(10))  # 0.00004400 seconds
-    # plot_tsp(nearest_neighbour, make_cities(500))  # 0.06097600 seconds
+
+    # 2788.0 km in 2.0547949999999999 s
+    # plot_tsp(brute_force, make_cities(10))
+
+    # 3206.7 km in 0.0000450000000000 s
+    # plot_tsp(nearest_neighbour, make_cities(10))
+
+    #
+    # plot_tsp(two_opt, make_cities(10))
+
+    # ?
+    # plot_tsp(brute_force, make_cities(500))
+
+    # 20548.2 km in 0.0713690000000000 s
+    # plot_tsp(nearest_neighbour, make_cities(500))
+
+    #
+    plot_tsp(two_opt, make_cities(50))
