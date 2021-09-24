@@ -49,14 +49,13 @@ def next(state):
 
 
 def forward(path):
-    state = path[::-1][0]
+    state, paths = path[::-1][0], []
 
     if is_goal(state):
         return [path]
 
-    paths = []
-
     for s in next(state):
+
         if is_valid(s) and s not in path:
 
             for p in forward(path + [s]):

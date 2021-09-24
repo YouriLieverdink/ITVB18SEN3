@@ -42,71 +42,60 @@ def set_grid_value(node, value):
 
 def search(app, start, goal):
     # Search the goal using the UCS or A* algorithm.
-    frontier = PriorityQueue()
-    visited = set()
-    path = dict()
+    frontier, visited, path = PriorityQueue(), set(), dict()
 
-    # Add the initial node to the queue.
+    # Put the initial node in the queue.
     frontier.put(start, 0)
 
+    # Continue as long the queue has items.
     while not frontier.empty():
         # Retrieve the node with the highest priority.
         node = frontier.get()
         app.plot_node(node, cf.PATH_C)
 
-        # Check whether the goal has been reached.
+        # Check whether the goal node has been reached.
         if node == goal:
-            app.draw_path(path)
-            break
+            return app.draw_path(path)
 
         visited.add(node)
 
-        # Walk through all the neighbours.
+        # Walk through the neighbours of the node.
         for neighbour in neighbours(node):
-            # Check if the neighbour is valid.
+            # Continue to next iteration if the neighbour is blocking.
             if get_grid_value(neighbour) == 'b':
                 continue
 
             # Calculate the cost of the neighbour.
-            new_cost = get_grid_value(node) + cost(node, neighbour)
+            new_cost = get_grid_value(node) + 1
 
             if (neighbour not in visited) or (new_cost < get_grid_value(neighbour)):
-                # Update the cost of the neighbour.
+                # The neighbour has not been visited or has become cheaper.
+
+                # Update the cost
                 set_grid_value(neighbour, new_cost)
 
-                # Remove from frontier if exists.
+                # Update the frontier.
                 for item in frontier.elements:
                     if (item[1] == neighbour):
                         frontier.elements.remove(item)
 
-                # Calculate the priority.
+                # The A* part.
                 priority = new_cost
 
                 if app.alg.get() == 'A*':
                     priority = new_cost + heuristic(neighbour, goal)
+                    visited.add(neighbour)
 
-                # Add the neighbour to the frontier.
                 frontier.put(neighbour, priority)
-                visited.add(neighbour)
 
-                # Update the path.
+                # Update the path
                 path[neighbour] = node
-
-
-def cost(node1, node2):
-    # Calculates the cost.
-    cost1 = get_grid_value(node1)
-    cost2 = get_grid_value(node2)
-
-    if cost2 != -1:
-        set_grid_value(node2, cost1 + 1)
-
-    return get_grid_value(node1) + 1
+                visited.add(neighbour)
 
 
 def heuristic(node, goal):
     # Calculates the heuristic based on the current node and goal.
-    return sum([goal[0] - node[0], goal[1], node[1]])
+    return (goal[0] * goal[1]) - (node[0] * node[1])
 
 
 def neighbours(node):
