@@ -1,4 +1,5 @@
 def is_valid(state):
+    # Check whether the provided state is valid.
     for s in state.split('|'):
         if ('C' in s and 'G' in s and 'F' not in s):
             return False
@@ -10,6 +11,7 @@ def is_valid(state):
 
 
 def is_goal(state):
+    # Check whether the provided state is the goal state.
     return state.split('|')[0] == ''
 
 
@@ -19,6 +21,7 @@ def sort_string(str):
 
 
 def move(dir, state, item):
+    # Move the provided item in the provided direction.
     s = state.split('|')
 
     if (dir == 'r'):
@@ -32,6 +35,7 @@ def move(dir, state, item):
 
 
 def next(state):
+    # Returns the next valid and invalid states based on the provided state.
     sides = state.split('|')
     states = []
 
@@ -48,7 +52,8 @@ def next(state):
     return states
 
 
-def forward(path):
+def dfs(path):
+    # Performs the deep first search algorithm.
     state, paths = path[::-1][0], []
 
     if is_goal(state):
@@ -58,7 +63,7 @@ def forward(path):
 
         if is_valid(s) and s not in path:
 
-            for p in forward(path + [s]):
+            for p in dfs(path + [s]):
                 paths = paths + [p]
 
     return paths
@@ -66,7 +71,6 @@ def forward(path):
 
 if __name__ == "__main__":
     state = 'FCGW|'
-    paths = forward([state])
 
-    for x in paths:
-        print(x)
+    for p in dfs([state]):
+        print(p)
