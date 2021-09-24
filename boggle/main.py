@@ -1,45 +1,57 @@
 from constants import BOARD
 
 
-def neighbours(cursor, n):
-    cursors = []
+def neighbours(p, n):
+    # Returns the neighbours of the provided position.
+    positions = []
 
-    cursors.append([(cursor[0] - 1) % n, cursor[1]])
-    cursors.append([cursor[0], (cursor[1] + 1) % n])
-    cursors.append([(cursor[0] + 1) % n, cursor[1]])
-    cursors.append([cursor[0], (cursor[1] - 1) % n])
+    # Up
+    positions.append([(p[0] - 1) % n, p[1]])
+    # Right
+    positions.append([p[0], (p[1] + 1) % n])
+    # Down
+    positions.append([(p[0] + 1) % n, p[1]])
+    # Left
+    positions.append([p[0], (p[1] - 1) % n])
 
-    return cursors
+    return positions
 
 
-def dfs(cursor, board, word, prefixes, words, visited):
+def dfs(p, board, prefixes, word, words, visited):
+    # Performs the deep first search algorithm to find words.
+    if str(p) not in visited:
+        # Continue if the item has not been visited before.
+        visited.add(str(p))
 
-    value = board[cursor[0]][cursor[1]]
+        # Create a string with the current word.
+        word = word + board[p[0]][p[1]]
 
-    if value in visited:
-        return
+        # Check if the word is valid.
+        if word in words:
+            print(word)
 
-    visited.add(value)
-    new_word = word + value
+        # Continue searching when the word matches a prefix.
+        if word in prefixes:
+            # Search the neighbours of the current position.
+            for n in neighbours(p, len(board)):
+                dfs(n, board, prefixes, word, words, visited)
 
-    if new_word in words:
-        print(new_word)
-
-    if new_word in prefixes:
-        # Search the neighbours
-        for c in neighbours(cursor, len(board)):
-            dfs(c, board, new_word, prefixes, words, visited)
+        # Remove the position when nothing matched.
+        visited.remove(str(p))
 
 
 if __name__ == '__main__':
+    # Create a set for the prefixes and load the words.
     prefixes, words = set(), open('./assets/words.txt').read().split()
 
+    # Create prefixes for all the words.
     for word in words:
         for i in range(len(word)):
             prefixes.add(word[:i])
 
     n = len(BOARD)
 
+    # Start the DFS algorithm from every position on the board.
     for x in range(n):
         for y in range(n):
-            dfs([x, y], BOARD, '', prefixes, words, set())
+            dfs([x, y], BOARD, prefixes, '', words, set())
