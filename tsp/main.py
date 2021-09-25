@@ -1,5 +1,6 @@
 import itertools
 import random
+import string
 import time
 from typing import FrozenSet, List
 
@@ -18,9 +19,9 @@ def length(tour: List[Point]) -> float:
 
 def make_cities(n, width=1000, height=1000):
     # Make a set of (n) cities where each has random coordinates.
-    random.seed(63)
+    random.seed(1)
 
-    return frozenset(Point(random.randrange(width), random.randrange(height)) for c in range(n))
+    return frozenset(Point(random.randrange(width), random.randrange(height), string.ascii_uppercase[c % 26]) for c in range(n))
 
 
 def plot_tour(tour):
@@ -28,6 +29,18 @@ def plot_tour(tour):
     points = list(tour) + [tour[0]]
 
     plt.plot([p.x for p in points], [p.y for p in points], 'bo-')
+
+    for p in points:
+        label = f"{p.name}"
+
+        plt.annotate(
+            label,
+            (p.x, p.y),
+            textcoords="offset points",
+            xytext=(0, 10),
+            ha='center',
+        )
+
     plt.axis('scaled')
     plt.axis('off')
     plt.show()
@@ -74,46 +87,44 @@ def nearest_neighbour(cities: FrozenSet[Point]) -> List[Point]:
     return tour
 
 
+def swap(tour, i, j):
+    temp = tour[:i]
+    temp = temp + tour[i:j+1][::-1]
+    temp = temp + tour[j+1:]
+    return temp
+
+
 def two_opt(cities: FrozenSet[Point]) -> List[Point]:
     # Use the NN algorithm combined with k-opt to find an improved guess of the optimal path.
     tour = nearest_neighbour(cities)
     best, n = tour, len(tour)
 
-    iterations, improved = 200, True
+    improved, iterations = True, 200
+
+    # Returns the next element in the tour.
+    def next(i, v=1): return (i + v) % n
 
     while improved and iterations > 0:
-        # Update the number of iterations.
+        # Decrease the iterations.
         iterations -= 1
         improved = False
 
-        # Create segments using the current best tour.
-        segments: List[Segment] = []
+        # Update the counter.
+        for i in range(n):
+            # Create the first segment.
+            s1 = Segment(best[i], best[next(i)])
 
-        for x in range(n):
-            segments.append(Segment(best[x], best[(x + 1) % n]))
+            for j in range(n - 3):
+                # Create the second segment.
+                s2 = Segment(best[next(i + j, 2)], best[next(i + j, 3)])
 
-        # Walk through every segment combination.
-        for s1 in segments:
-            for s2 in segments:
-                # Don't compare the segment to itself.
-                if s1 == s2:
-                    continue
-
-                # Check whether the segments intersect.
+                # Check whether the 2 segments intersect.
                 if do_intersect(s1.p1, s1.p2, s2.p1, s2.p2):
-                    s1p1 = best.index(s1.p1)
-                    s1p2 = best.index(s1.p2)
+                    # Swap the two cities.
+                    attempt = swap(best, best.index(s1.p1), best.index(s2.p1))
 
-                    # Swap the cities.
-                    new_tour = best[:]
-                    new_tour[s1p1], new_tour[s1p2] = new_tour[s1p2], new_tour[s1p1]
-
-                    # Check whether the tour became shorter.
-                    if length(new_tour) < length(best):
-                        improved = True
-                        best = new_tour
-
-    print('i:', 200 - iterations)
+                    if length(attempt) < length(best):
+                        best, improved = attempt, True
 
     return best
 
@@ -137,4 +148,4 @@ if __name__ == '__main__':
     # plot_tsp(nearest_neighbour, make_cities(500))
 
     #
-    plot_tsp(two_opt, make_cities(50))
+    plot_tsp(two_opt, make_cities(10))
