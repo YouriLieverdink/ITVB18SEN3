@@ -19,7 +19,7 @@ def length(tour: List[Point]) -> float:
 
 def make_cities(n, width=1000, height=1000):
     # Make a set of (n) cities where each has random coordinates.
-    random.seed(1)
+    random.seed(3)
 
     return frozenset(Point(random.randrange(width), random.randrange(height), string.ascii_uppercase[c % 26]) for c in range(n))
 
@@ -87,44 +87,29 @@ def nearest_neighbour(cities: FrozenSet[Point]) -> List[Point]:
     return tour
 
 
-def swap(tour, i, j):
-    temp = tour[:i]
-    temp = temp + tour[i:j+1][::-1]
-    temp = temp + tour[j+1:]
-    return temp
-
-
 def two_opt(cities: FrozenSet[Point]) -> List[Point]:
     # Use the NN algorithm combined with k-opt to find an improved guess of the optimal path.
     tour = nearest_neighbour(cities)
-    best, n = tour, len(tour)
+    best, improved, n = tour, True, len(tour)
 
-    improved, iterations = True, 200
-
-    # Returns the next element in the tour.
-    def next(i, v=1): return (i + v) % n
-
-    while improved and iterations > 0:
-        # Decrease the iterations.
-        iterations -= 1
+    while improved:
         improved = False
 
-        # Update the counter.
-        for i in range(n):
-            # Create the first segment.
-            s1 = Segment(best[i], best[next(i)])
+        # Walk through the possible city combinations.
+        for i in range(1, n - 2):
+            for j in range(i + 1, n):
+                # This combination changes nothing.
+                if j - i == 1:
+                    continue
 
-            for j in range(n - 3):
-                # Create the second segment.
-                s2 = Segment(best[next(i + j, 2)], best[next(i + j, 3)])
+                attempt = tour[:]
+                # Swap the two cities.
+                attempt[i:j] = tour[j-1:i-1:-1]
+                # Check whether the route has shortend.
+                if length(attempt) < length(best):
+                    best, improved = attempt, True
 
-                # Check whether the 2 segments intersect.
-                if do_intersect(s1.p1, s1.p2, s2.p1, s2.p2):
-                    # Swap the two cities.
-                    attempt = swap(best, best.index(s1.p1), best.index(s2.p1))
-
-                    if length(attempt) < length(best):
-                        best, improved = attempt, True
+        tour = best
 
     return best
 
@@ -138,7 +123,7 @@ if __name__ == '__main__':
     # 3206.7 km in 0.0000450000000000 s
     # plot_tsp(nearest_neighbour, make_cities(10))
 
-    #
+    # 2923.6 km in 0.0003780000000000 s
     # plot_tsp(two_opt, make_cities(10))
 
     # ?
@@ -147,5 +132,5 @@ if __name__ == '__main__':
     # 20548.2 km in 0.0713690000000000 s
     # plot_tsp(nearest_neighbour, make_cities(500))
 
-    #
-    plot_tsp(two_opt, make_cities(10))
+    # ?
+    plot_tsp(two_opt, make_cities(500))

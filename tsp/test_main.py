@@ -3,9 +3,9 @@ from main import swap
 
 def test_swap():
     # Test the functionality of the swap function.
-    tour = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'a']
+    tour = ['h', '1', '2', '3', '4', '5', '6']
 
-    assert swap(tour, 3, 6) == ['a', 'b', 'c', 'g', 'f', 'e', 'd', 'h', 'a']
+    assert swap(tour, 2, 5) == ['h', '1', '5', '4', '3', '2', '6']
 
 
 if __name__ == '__main__':

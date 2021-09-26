@@ -6,7 +6,7 @@ class Point:
         self.name = name
 
     def __str__(self) -> str:
-        return '(x: {}, y: {})'.format(self.x, self.y)
+        return '(name: {})'.format(self.name)
 
 
 class Segment:
