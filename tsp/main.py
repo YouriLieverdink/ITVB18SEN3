@@ -19,7 +19,7 @@ def length(tour: List[Point]) -> float:
 
 def make_cities(n, width=1000, height=1000):
     # Make a set of (n) cities where each has random coordinates.
-    random.seed(3)
+    random.seed(16)
 
     return frozenset(Point(random.randrange(width), random.randrange(height), string.ascii_uppercase[c % 26]) for c in range(n))
 
@@ -30,16 +30,16 @@ def plot_tour(tour):
 
     plt.plot([p.x for p in points], [p.y for p in points], 'bo-')
 
-    for p in points:
-        label = f"{p.name}"
+    # for p in points:
+    #     label = f"{p.name}"
 
-        plt.annotate(
-            label,
-            (p.x, p.y),
-            textcoords="offset points",
-            xytext=(0, 10),
-            ha='center',
-        )
+    #     plt.annotate(
+    #         label,
+    #         (p.x, p.y),
+    #         textcoords="offset points",
+    #         xytext=(0, 10),
+    #         ha='center',
+    #     )
 
     plt.axis('scaled')
     plt.axis('off')
@@ -87,50 +87,57 @@ def nearest_neighbour(cities: FrozenSet[Point]) -> List[Point]:
     return tour
 
 
+def swap(tour, i, j):
+    temp = tour[:]
+    temp[i:j+1] = tour[j:i-1:-1]
+    return temp
+
+
 def two_opt(cities: FrozenSet[Point]) -> List[Point]:
     # Use the NN algorithm combined with k-opt to find an improved guess of the optimal path.
     tour = nearest_neighbour(cities)
-    best, improved, n = tour, True, len(tour)
+    improved, n = True, len(tour)
+
+    def next(i, v=1): return (i + v) % n
 
     while improved:
         improved = False
 
-        # Walk through the possible city combinations.
-        for i in range(1, n - 2):
-            for j in range(i + 1, n):
-                # This combination changes nothing.
-                if j - i == 1:
-                    continue
+        for i in range(n):
+            p1, p2 = tour[i], tour[next(i)]
 
-                attempt = tour[:]
-                # Swap the two cities.
-                attempt[i:j] = tour[j-1:i-1:-1]
-                # Check whether the route has shortend.
-                if length(attempt) < length(best):
-                    best, improved = attempt, True
+            for j in range(n - 3):
+                p3, p4 = tour[next(i + j, 2)], tour[next(i + j, 3)]
 
-        tour = best
+                if do_intersect(p1, p2, p3, p4):
+                    # Swap the two points.
+                    attempt = swap(tour, next(i), next(i + j, 2))
 
-    return best
+                    # Check whether the new route is shorter.
+                    if length(attempt) < length(tour):
+                        improved = True
+                        tour = attempt
+
+    return tour
 
 
 if __name__ == '__main__':
     # Plot the TSP algorithm.
 
-    # 2788.0 km in 2.0547949999999999 s
+    # 2727.8 km in 2.0862889999999998 s
     # plot_tsp(brute_force, make_cities(10))
 
-    # 3206.7 km in 0.0000450000000000 s
+    # 3385.1 km in 0.0000440000000000 s
     # plot_tsp(nearest_neighbour, make_cities(10))
 
-    # 2923.6 km in 0.0003780000000000 s
+    # 2935.3 km in 0.0004750000000000 s
     # plot_tsp(two_opt, make_cities(10))
 
     # ?
     # plot_tsp(brute_force, make_cities(500))
 
-    # 20548.2 km in 0.0713690000000000 s
+    # 21161.7 km in 0.0612549999999999 s
     # plot_tsp(nearest_neighbour, make_cities(500))
 
-    # ?
+    # 19251.7 km in 2.8605630000000000 s
     plot_tsp(two_opt, make_cities(500))
