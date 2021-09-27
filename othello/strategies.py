@@ -1,4 +1,5 @@
 import random
+import math
 
 from main import legal_moves, print_board, score, make_move, opponent, heuristic
 
@@ -29,7 +30,7 @@ def rand(player, board):
 
 def minimax(player, board):
     # Determines the best move using the minimax algorithm.
-    def minmax(board, player, is_max, depth=3):
+    def minmax(board, player, is_max, alpha, beta, depth=3):
         opp = opponent(player)
 
         if depth == 0:
@@ -37,30 +38,44 @@ def minimax(player, board):
             return (player_score - opponent_score) + heuristic(player, board)
 
         if is_max:
-            value = 0
+            value = -math.inf
 
             for move in legal_moves(player, board):
                 # Create the new board.
                 temp_board = make_move(move, player, board[:])
-                value = max(value, minmax(temp_board, opp, False, depth - 1))
+                value = max(
+                    value, minmax(temp_board, opp, False, alpha, beta, depth - 1))
+
+                if value > beta:
+                    break
+
+                alpha = max(alpha, value)
+
             return value
 
         else:
-            value = 0
+            value = math.inf
 
             for move in legal_moves(player, board):
                 # Create the new board.
                 temp_board = make_move(move, player, board[:])
-                value = min(value, minmax(temp_board, opp, True, depth - 1))
+                value = min(value,
+                            minmax(temp_board, opp, True, alpha, beta, depth - 1))
+
+                if value < alpha:
+                    break
+
+                beta = min(beta, value)
+
             return value
 
-    best_score, best_move = -1, -1
+    moves = []
 
     for move in legal_moves(player, board):
         # Calculate the mini max score.
-        minmax_score = minmax(board[:], player, True)
+        minmax_score = minmax(board[:], player, -math.inf, math.inf, True)
+        moves.append((minmax_score, move))
 
-        if minmax_score >= best_score:
-            best_score, best_move = minmax_score, move
+    best = max(moves, key=lambda move: move[0])
 
-    return best_move
+    return best[1]
