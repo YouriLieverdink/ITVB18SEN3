@@ -1,7 +1,6 @@
 import random
-import time
 
-from main import legal_moves, print_board, score, make_move, opponent
+from main import legal_moves, print_board, score, make_move, opponent, heuristic
 
 
 def user(player, board):
@@ -35,7 +34,7 @@ def minimax(player, board):
 
         if depth == 0:
             player_score, opponent_score = score(player, board)
-            return player_score - opponent_score
+            return (player_score - opponent_score) + heuristic(player, board)
 
         if is_max:
             value = 0

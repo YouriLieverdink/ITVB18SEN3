@@ -1,4 +1,5 @@
 import strategies
+import contants
 
 """
 
@@ -232,6 +233,19 @@ def score(player, board):
             opponent_score += 1
 
     return (player_score, opponent_score)
+
+
+def heuristic(player, board):
+    # An additional heuristic function to determine the 'quality' of the board.
+    score = 0
+
+    for i in squares():
+        # Loop through every cell on the board.
+        if board[i] is player:
+            # Use the board weights to update the score.
+            score = score + contants.board_weights[i]
+
+    return score
 
 
 if __name__ == '__main__':
