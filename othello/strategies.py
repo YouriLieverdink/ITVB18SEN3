@@ -1,6 +1,7 @@
 import random
+import time
 
-from main import legal_moves, print_board
+from main import legal_moves, print_board, score, make_move, opponent
 
 
 def user(player, board):
@@ -29,4 +30,38 @@ def rand(player, board):
 
 def minimax(player, board):
     # Determines the best move using the minimax algorithm.
-    pass
+    def minmax(board, player, is_max, depth=3):
+        opp = opponent(player)
+
+        if depth == 0:
+            player_score, opponent_score = score(player, board)
+            return player_score - opponent_score
+
+        if is_max:
+            value = 0
+
+            for move in legal_moves(player, board):
+                # Create the new board.
+                temp_board = make_move(move, player, board[:])
+                value = max(value, minmax(temp_board, opp, False, depth - 1))
+            return value
+
+        else:
+            value = 0
+
+            for move in legal_moves(player, board):
+                # Create the new board.
+                temp_board = make_move(move, player, board[:])
+                value = min(value, minmax(temp_board, opp, True, depth - 1))
+            return value
+
+    best_score, best_move = -1, -1
+
+    for move in legal_moves(player, board):
+        # Calculate the mini max score.
+        minmax_score = minmax(board[:], player, True)
+
+        if minmax_score >= best_score:
+            best_score, best_move = minmax_score, move
+
+    return best_move

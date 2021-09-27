@@ -196,6 +196,10 @@ def play(black_strategy, white_strategy):
         # Update the player.
         player = next_player(board, player)
 
+    # The game has finished.
+    black, white = score(BLACK, board)
+    print('{} has won!'.format('Black' if black > white else 'White'))
+
 
 def next_player(board, prev_player):
     # Which player should move next? Returns None if no legal moves exist.
@@ -219,16 +223,16 @@ def get_move(strategy, player, board):
 
 def score(player, board):
     # Compute player's score (number of player's pieces minus opponent's).
-    player, opponent = 0, 0
+    player_score, opponent_score = 0, 0
 
     for sq in board:
-        if sq == player:
-            player += 1
-        elif sq == opponent:
-            opponent += 1
+        if sq is player:
+            player_score += 1
+        elif sq is opponent(player):
+            opponent_score += 1
 
-    return player - opponent
+    return (player_score, opponent_score)
 
 
 if __name__ == '__main__':
-    play(strategies.user, strategies.rand)
+    play(strategies.rand, strategies.minimax)
