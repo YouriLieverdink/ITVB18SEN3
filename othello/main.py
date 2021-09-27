@@ -1,3 +1,5 @@
+import strategies
+
 """
 
 Othello is a turn-based two-player strategy board game.
@@ -169,20 +171,64 @@ def any_legal_move(player, board):
 
 
 def play(black_strategy, white_strategy):
-    # play a game of Othello and return the final board and score
-    pass
+    # Play a game of Othello and return the final board and score.
+    board = initial_board()
+    player = BLACK
+    active = True
+
+    while active:
+        # Check whether the game is completed.
+        if player is None:
+            active is False
+            break
+
+        # Retrieve the next move.
+        strategy = black_strategy if player is BLACK else white_strategy
+        move = get_move(strategy, player, board)
+
+        # Check whether the move is valid.
+        if not is_valid(move):
+            raise IllegalMoveError(player, move, board)
+
+        # Make the move.
+        make_move(move, player, board)
+
+        # Update the player.
+        player = next_player(board, player)
 
 
 def next_player(board, prev_player):
-    # which player should move next?  Returns None if no legal moves exist
-    pass
+    # Which player should move next? Returns None if no legal moves exist.
+    opp = opponent(prev_player)
+
+    # Check whether the opponent has any legal moves.
+    if any_legal_move(opp, board):
+        return opp
+    # Check whether the current player has any legal moves.
+    elif any_legal_move(prev_player, board):
+        return prev_player
+    else:
+        # No one can make a move, the game is finished.
+        return None
 
 
 def get_move(strategy, player, board):
-    # call strategy(player, board) to get a move
-    pass
+    # Call strategy(player, board) to get a move.
+    return strategy(player, board)
 
 
 def score(player, board):
-    # compute player's score (number of player's pieces minus opponent's)
-    pass
+    # Compute player's score (number of player's pieces minus opponent's).
+    player, opponent = 0, 0
+
+    for sq in board:
+        if sq == player:
+            player += 1
+        elif sq == opponent:
+            opponent += 1
+
+    return player - opponent
+
+
+if __name__ == '__main__':
+    play(strategies.user, strategies.rand)
