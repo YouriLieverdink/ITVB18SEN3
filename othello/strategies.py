@@ -30,12 +30,11 @@ def rand(player, board):
 
 def minimax(player, board):
     # Determines the best move using the minimax algorithm.
-    def minmax(board, player, is_max, alpha, beta, depth=3):
+    def minmax(board, player, is_max, alpha, beta, depth=5):
         opp = opponent(player)
 
         if depth == 0:
-            player_score, opponent_score = score(player, board)
-            return (player_score - opponent_score) + heuristic(player, board)
+            return heuristic(player, board)
 
         if is_max:
             value = -math.inf
