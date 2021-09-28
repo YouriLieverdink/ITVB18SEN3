@@ -1,6 +1,9 @@
-import random
+import copy
 import itertools
 import math
+import random
+
+import ai
 
 MAX_DEPTH = 3
 
@@ -170,5 +173,82 @@ def get_random_move():
     return random.choice(list(MERGE_FUNCTIONS.keys()))
 
 
+def possible_boards(b):
+    # Returns a list of tuples with the boards and their chance of happening.
+    boards, n = [], len(b)
+
+    # Retrieve the number of empty spaces.
+    empty = ai.empty(b)
+
+    for i in range(n):
+        for j in range(n):
+
+            # Check whether the cell is empty.
+            if b[i][j] == 0:
+
+                # Copy the board and set the value to 2.
+                board = copy.deepcopy(b)
+                board[i][j] = 2
+
+                # Add the board and it's chance of occuring.
+                boards.append((0.9 * (empty / 100), board))
+
+                # Copy the board and set the value to 4.
+                board = copy.deepcopy(b)
+                board[i][j] = 4
+
+                # Add the board and it's chance of occuring.
+                boards.append((0.1 * (empty / 100), board))
+
+    return boards
+
+
 def get_expectimax_move(b):
-    pass
+    # Determine the best move using expectimax.
+    best_dir, best_score = 0, -math.inf
+
+    for dir in MERGE_FUNCTIONS.keys():
+        board = play_move(copy.deepcopy(b), dir)
+
+        # Determine the depth based on the number of empty spaces.
+        depth = 5 if ai.empty(board) < 6 else 3
+
+        # Calculate the expectimax score.
+        expectimax_score = expectimax(board, depth, False)
+
+        if expectimax_score > best_score:
+            best_dir, best_score = dir, expectimax_score
+
+    return best_dir
+
+
+def is_terminal(b):
+    # Check whether the board is the terminal board state.
+    return not move_exists(b)
+
+
+def expectimax(board, depth, is_max):
+    # Calculate the best move using the expectimax algorithm.
+    if depth == 0 or is_terminal(board):
+        return ai.heuristic(board)
+
+    if is_max:
+        value = -math.inf
+
+        for dir in MERGE_FUNCTIONS.keys():
+            # Create the new board.
+            temp_board = play_move(copy.deepcopy(board), dir)
+            score = expectimax(temp_board, depth - 1, False)
+            value = max(score, value)
+
+        return value
+
+    else:
+        value = 0
+
+        for val in possible_boards(board):
+            # Create the new board.
+            score = (val[0] * expectimax(val[1], depth - 1, True))
+            value += score
+
+        return value
