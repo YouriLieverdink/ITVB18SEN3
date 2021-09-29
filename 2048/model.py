@@ -191,14 +191,14 @@ def possible_boards(b):
                 board[i][j] = 2
 
                 # Add the board and it's chance of occuring.
-                boards.append((0.9 * (empty / 100), board))
+                boards.append((0.9 * (100 / empty), board))
 
                 # Copy the board and set the value to 4.
                 board = copy.deepcopy(b)
                 board[i][j] = 4
 
                 # Add the board and it's chance of occuring.
-                boards.append((0.1 * (empty / 100), board))
+                boards.append((0.1 * (100 / empty), board))
 
     return boards
 

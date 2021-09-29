@@ -14,8 +14,8 @@ def weights(b):
     value, n = 0, len(b)
 
     weights = [
-        [2048, 1024, 64, 32],
-        [512, 128, 16, 2],
+        [2048, 1024, 512, 256],
+        [1024, 512, 256, 128],
         [256, 8, 2, 1],
         [4, 2, 1, 1]
     ]
@@ -60,7 +60,7 @@ def monotonicity(b):
 
 def position(b):
     """Return a heuristic value based on the position of the largest value on the board."""
-    value, tile, n = 0, -1, len(b)
+    value, tile = 0, -1
 
     # Retrieve the largest value.
     for row in b:
@@ -84,15 +84,15 @@ def heuristic(b):
         },
         'weights': {
             'value': weights(b),
-            'weight': 7,
+            'weight': 8,
         },
         'monotonicity': {
             'value': monotonicity(b),
-            'weight': 2,
+            'weight': 3,
         },
         'position': {
             'value': position(b),
-            'weight': 9,
+            'weight': 12,
         },
     }
 
