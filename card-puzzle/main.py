@@ -1,7 +1,7 @@
 import time
 from itertools import permutations
 
-from constants import NEIGHBOURS
+from constants import CARDS, NEIGHBOURS
 
 
 def neighbours(i, b):
@@ -15,54 +15,83 @@ def is_valid(b):
 
     for i in range(n):
         # Retrieve the card.
-        c, neighbouring = b[i], neighbours(i, b)
+        c, peers = b[i], neighbours(i, b)
 
         # Two cards on the same type can't be neighbours.
-        if c in neighbouring:
+        if (c != '.') and (c in peers):
             return False
 
         # Every Ace is adjacent to a King.
-        if (c == 'A') and ('K' not in neighbouring):
+        if (c == 'A') and ('K' not in peers and '.' not in peers):
             return False
 
         # Every King is adjacent to a Queen.
-        if (c == 'K') and ('Q' not in neighbouring):
+        if (c == 'K') and ('Q' not in peers and '.' not in peers):
             return False
 
         # Every Queen is adjacent to a Farmer.
-        if (c == 'Q') and ('J' not in neighbouring):
+        if (c == 'Q') and ('J' not in peers and '.' not in peers):
             return False
 
         # Every Ace is not adjecent to a Queen.
-        if (c == 'A') and ('Q' in neighbouring):
+        if (c == 'A') and ('Q' in peers):
             return False
 
     return True
 
 
-def brute_force(b):
-    solutions = set()
-
-    # Find the solution to the problem using brute force.
+def brute_force(b, s):
+    # Find solutions using brute force.
     for board in list(permutations(b)):
         if is_valid(board):
-            solutions.add(board)
+            s.add(board)
 
-    return solutions
+
+def dfs(b, s, i=0, domain=CARDS):
+    # Find solutions using dfs and back-tracking.
+    if is_valid(b):
+        # Check if all keys have a value.
+        if b.count('.') == 0:
+            # Found a solution!
+            return True
+
+        # Try all values from the domain.
+        for c in domain:
+            # Assign the variable.
+            b[i] = c
+            domain.remove(c)
+
+            # Start the recursive call.
+            if dfs(b, s, i + 1, domain):
+                # Found a solution!
+                s.add(str(b))
+
+            # Undo the assignment.
+            b[i] = '.'
+            domain.append(c)
 
 
 def solve(alg, b):
     # Find the solution using the provided algorithm.
     t0 = time.process_time()
-    result = alg(b)
+
+    solutions = set()
+    alg(b, solutions)
+
     t1 = time.process_time()
 
-    print('Found {} solutions in {:.3f} seconds using {}.'.format(
-        len(result), t1 - t0, alg.__name__)
+    for s in solutions:
+        print(s)
+
+    print('Found {} solutions in {:.3f} seconds using {}.\n'.format(
+        len(solutions), t1 - t0, alg.__name__)
     )
 
 
 if __name__ == '__main__':
     # Start the script.
-    b = ('A', 'A', 'K', 'K', 'Q', 'Q', 'J', 'J')
+    b = CARDS
     solve(brute_force, b)
+
+    b = ['.', '.', '.', '.', '.', '.', '.', '.']
+    solve(dfs, b)
