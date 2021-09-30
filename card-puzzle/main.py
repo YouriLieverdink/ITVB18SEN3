@@ -53,7 +53,9 @@ def solve(alg, b):
     result = alg(b)
     t1 = time.process_time()
 
-    print('Found: {} in {:.3f} seconds.'.format(result, t1 - t0))
+    print('Found: {} in {:.3f} seconds using {}.'.format(
+        result, t1 - t0, alg.__name__)
+    )
 
 
 if __name__ == '__main__':
