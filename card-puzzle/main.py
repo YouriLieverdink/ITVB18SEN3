@@ -41,10 +41,14 @@ def is_valid(b):
 
 
 def brute_force(b):
+    solutions = set()
+
     # Find the solution to the problem using brute force.
     for board in list(permutations(b)):
         if is_valid(board):
-            return board
+            solutions.add(board)
+
+    return solutions
 
 
 def solve(alg, b):
@@ -53,8 +57,8 @@ def solve(alg, b):
     result = alg(b)
     t1 = time.process_time()
 
-    print('Found: {} in {:.3f} seconds using {}.'.format(
-        result, t1 - t0, alg.__name__)
+    print('Found {} solutions in {:.3f} seconds using {}.'.format(
+        len(result), t1 - t0, alg.__name__)
     )
 
 
