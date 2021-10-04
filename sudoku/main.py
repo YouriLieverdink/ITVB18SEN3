@@ -87,6 +87,39 @@ def is_solved(b):
     return True
 
 
+def make_arc_consistent(b, c, v):
+    """ Applies arc-consistency to the provided board. """
+    changed = False
+
+    # Walk through every peer cell of c.
+    for p in peers[c]:
+        # Check if the peer has the provided value (v).
+        if v in b[p]:
+            # Check whether the peer has less than or equal to 1 value in it's domain.
+            if len(b[p]) <= 1:
+                # Conflict.
+                return False
+            else:
+                # Remove the provided value (v) from the peer's domain.
+                b[p] = b[p].replace(v, '')
+                changed = True
+
+    if changed:
+        # Find all the cells with exactly one value.
+        for key, value in b.items():
+
+            if key == c:
+                continue
+
+            # Check whether the domain has one value.
+            if len(value) == 1:
+
+                if not make_arc_consistent(b, key, value):
+                    return False
+
+    return True
+
+
 def solve(b):
     """ Finds a solution to the provided Sudoku using dfs and backtracking. """
     # Check whether the sudoku is solved.
@@ -95,30 +128,29 @@ def solve(b):
         display(b)
         return True
 
-    # Select the key with the shortest number of values in it's domain.
-    key, length = None, 10
+    # Select the cell with the shortest number of values in it's domain.
+    cell, length = None, 10
 
     for k, v in b.items():
         # Check if the key has a domain larger than one.
         if len(v) > 1:
             # Check whether it's smaller than the current length.
             if len(v) < length:
-                key, length = k, len(v)
+                cell, length = k, len(v)
 
-    # Check every value v in the domain of the key.
-    for v in (domain := b[key]):
+    # Check every value v in the domain of the cell.
+    for v in b[cell]:
         # Check whether there are any conflicts.
-        if no_conflict(b, key, v):
+        if no_conflict(b, cell, v):
             # Assign the variable.
-            b[key] = v
+            new_b = b.copy()
+            new_b[cell] = v
 
-            # The recursive call to dfs.
-            if solve(b):
-                # Found a solution!
-                return True
-
-            # Undo the assignment.
-            b[key] = domain
+            if make_arc_consistent(new_b, cell, v):
+                # The recursive call.
+                if solve(new_b):
+                    # Found a solution!
+                    return True
 
     # Didn't find a solution, backtrack.
     return False
