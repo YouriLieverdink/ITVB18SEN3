@@ -21,7 +21,10 @@ def draw_graph(data):
     # Maak gebruik van pytplot.scatter om dit voor elkaar te krijgen.
 
     # YOUR CODE HERE
-    pass
+    for x, y in data:
+        plt.plot(x, y, 'bo')
+
+    plt.show()
 
 
 def compute_cost(X, y, theta):
