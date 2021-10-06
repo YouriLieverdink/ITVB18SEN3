@@ -40,9 +40,9 @@ def is_valid(b):
     return True
 
 
-def brute_force(b, s):
+def brute_force(b, s, domain=CARDS):
     # Find solutions using brute force.
-    for board in list(permutations(b)):
+    for board in list(permutations(domain)):
         if is_valid(board):
             s.add(board)
 
@@ -90,8 +90,7 @@ def solve(alg, b):
 
 if __name__ == '__main__':
     # Start the script.
-    b = CARDS
-    solve(brute_force, b)
-
     b = ['.', '.', '.', '.', '.', '.', '.', '.']
+
+    solve(brute_force, b)
     solve(dfs, b)
