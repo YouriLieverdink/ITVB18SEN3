@@ -1,8 +1,8 @@
-import matplotlib.mlab as mlab
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import cm
+import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+import matplotlib.mlab as mlab
 
 
 def draw_graph(data):
@@ -21,8 +21,9 @@ def draw_graph(data):
     # Maak gebruik van pytplot.scatter om dit voor elkaar te krijgen.
 
     # YOUR CODE HERE
-    for x, y in data:
-        plt.plot(x, y, 'bo')
+    for l in data:
+        x, y = l
+        plt.scatter(x, y)
 
     plt.show()
 
@@ -49,7 +50,23 @@ def compute_cost(X, y, theta):
 
     J = 0
 
-    # YOUR CODE HERE
+    # 1. Bepaal het aantal datapunten.
+    m, sum = len(X), 0
+
+    for i in range(m):
+        # 2. Bepaal de voorspelling.
+        prediction = X[i].dot(theta)
+
+        # 3. Bereken het verschil.
+        difference = prediction - y[i]
+
+        # 4. Kwadrateer het verschil.
+        difference = difference ** 2
+
+        sum += difference
+
+    # 5. Deel het totaal door (2 keer het aantal datapunten)
+    J = sum / (m * 2)
 
     return J
 

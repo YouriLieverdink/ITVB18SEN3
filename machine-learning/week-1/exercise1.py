@@ -1,9 +1,8 @@
-import pickle
-import sys
-
 import numpy as np
+import sys
+import pickle
 
-from solutions import *
+from uitwerkingen import *
 
 '''
 Onderstaande regels laden het pickle-bestand in waarin de data is opgeslagen.
@@ -20,7 +19,7 @@ rest van het programma gebruikt kunnen worden:
 Het is de bedoeling om de optimale waarden voor theta te vinden.
 '''
 
-with open('data.pkl', 'rb') as f:
+with open('week1_data.pkl', 'rb') as f:
     data = pickle.load(f)
 
 m, n = data.shape
