@@ -50,23 +50,54 @@ def compute_cost(X, y, theta):
 
     J = 0
 
-    # 1. Bepaal het aantal datapunten.
-    m, sum = len(X), 0
+    """
+        1.
+        Het attribuut 'shape' bevat de dimensies van een matrix. De eerste waarde die je terugkrijgt is
+        het aantal rijen en de tweede waarde het aantal kolommen binnen een rij. Dit komt dus
+        overeen met het aantal datapunten (m) en het aantal features (n).
+    """
+    m, n = X.shape
 
-    for i in range(m):
-        # 2. Bepaal de voorspelling.
-        prediction = X[i].dot(theta)
+    """
+        2.
+        De 'dot' functie vermenigvuldigt de gegeven matrix met een vector. Om deze functie correct
+        te laten werken moet ervoor worden gezord dat de (n) van beide overeenkomt. Dit wordt
+        gedaan door een 1 toe te voegen aan de datapunten (X).
 
-        # 3. Bereken het verschil.
-        difference = prediction - y[i]
+        X = [
+            [ 1.    6.1101]
+            [ 1.    5.5277]
+        ]
+        -> Nu is het aantal kolommen gelijk aan 2.
 
-        # 4. Kwadrateer het verschil.
-        difference = difference ** 2
+        theta = [
+            [ 0. ]
+            [ 0. ]
+        ]
+        -> Hier is het aantal rijen gelijk aan 2.
 
-        sum += difference
+        Omdat deze beide waarden gelijk aan elkaar zijn kunnen ze worden gevermenigvuldigd.
+    """
+    h = np.dot(X, theta)
 
-    # 5. Deel het totaal door (2 keer het aantal datapunten)
-    J = sum / (m * 2)
+    """
+        3.
+        Hier worden de actuele waarden van de voorspelde waarden afgetrokken. Wanneer deze syntax
+        wordt gebruikt op twee matrixen (A - B) wordt er voor elk element in de eerste, het element
+        op dezelfde locatie in de tweede afgetrokken. (A[i] - B[i])
+
+        4.
+        Hetzelfde geldt voor het kwadrateren. Elke waarde in de matrix wordt op zichzelf 
+        gekwadrateert.
+    """
+    delta = (h - y) ** 2
+
+    """
+        5.
+        De verschillen worden bij elkaar opgeteld en vervolgens wordt dat gedeel door het aantal
+        datapunten * 2.
+    """
+    J = sum(delta) / (m * 2)
 
     return J
 
