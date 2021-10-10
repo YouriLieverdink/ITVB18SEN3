@@ -52,8 +52,8 @@ def compute_cost(X, y, theta):
 
     """
         1.
-        Het attribuut 'shape' bevat de dimensies van een matrix. De eerste waarde die je terugkrijgt is
-        het aantal rijen en de tweede waarde het aantal kolommen binnen een rij. Dit komt dus
+        Het attribuut 'shape' bevat de dimensies van een matrix. De eerste waarde die je terugkrijgt 
+        is het aantal rijen en de tweede waarde het aantal kolommen binnen een rij. Dit komt dus
         overeen met het aantal datapunten (m) en het aantal features (n).
     """
     m, n = X.shape
@@ -88,14 +88,15 @@ def compute_cost(X, y, theta):
 
         4.
         Hetzelfde geldt voor het kwadrateren. Elke waarde in de matrix wordt op zichzelf 
-        gekwadrateert.
+        gekwadrateert. Dit wordt gedaan zodat de grootste fouten het duidelijkst worden opgemerkt.
     """
     delta = (h - y) ** 2
 
     """
         5.
         De verschillen worden bij elkaar opgeteld en vervolgens wordt dat gedeel door het aantal
-        datapunten * 2.
+        datapunten * 2. Zo wordt de 'gemiddelde' fout berekent wat uiteindelijk de kosten is van de
+        ontvangen theta.
     """
     J = sum(delta) / (m * 2)
 
@@ -123,7 +124,61 @@ def gradient_descent(X, y, theta, alpha, num_iters):
     m, n = X.shape
     costs = []
 
-    # YOUR CODE HERE
+    """
+        0. Door middel van deze loop geven we simpelweg aan hoevaak we theta zouden willen
+        verbeteren.
+    """
+    for _ in range(num_iters):
+
+        """
+            1. We bepalen hier de voorspelling op dezelfde manier als in de 'compute_cost' functie
+            die hierboven staat. Echter moeten we hier wel de theta roteren.
+
+            We krijgen de theta als volgt binnen: 
+
+            theta = [
+                [0. 0.]
+            ]
+
+            en we willen hem graag zo:
+
+            theta = [
+                [0.]
+                [0.]
+            ]
+
+            omdat het aantal rijen dan weer overeenkomt met het aantal kolommen in X. Als we dit 
+            niet zouden doen kunnen we de 'dot' functie niet gebruiken.
+        """
+        h = np.dot(X, theta.T)
+
+        """
+            2. Vervolgens berekenen we het verschil tussen de voorspelde waarde en de actuele waarde
+            net zoals in de 'compute_cost' functie.
+
+            Merk op dat we hier vervolgens niet het verschil kwadrateren. Dit is het resultaat van
+            het partieel differentieren van de 'kosten' functie.
+        """
+        delta = h - y
+
+        """
+            3. Daarna vermenigvuldigen we dit verschil met de waarden uit X.
+
+            Ook dit is het resultaat van het partieel differtieren van de 'kosten' functie.
+        """
+        result = delta * X
+
+        """
+            4. Om vervolgens de nieuwe waarde van theta te berekenen moeten we een aantal stappen
+            uitvoeren. Zo worden alle resultaten bij elkaar opgeteld tot één totaal. Vervolgens
+            wordt dit door het aantal punten gedeeld om een gemiddelde te krijgen.
+
+            De 'alpha' in de onderstaande regel code wordt ook wel de 'learning rate' genoemd. Deze
+            waarde geeft aan hoe 'snel' het programma de waarde van theta moet aanpassen.
+        """
+        theta -= alpha * (sum(result) / m)
+
+        costs.append(compute_cost(X, y, theta.T))
 
     # aan het eind van deze loop retourneren we de nieuwe waarde van theta
     # (wat is de dimensionaliteit van theta op dit moment?).
@@ -133,8 +188,8 @@ def gradient_descent(X, y, theta, alpha, num_iters):
 
 def draw_costs(data):
     # OPGAVE 3b
-    # YOUR CODE HERE
-    pass
+    plt.plot(data)
+    plt.show()
 
 
 def contour_plot(X, y):
