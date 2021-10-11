@@ -212,7 +212,19 @@ def contour_plot(X, y):
 
     J_vals = np.zeros((len(t2), len(t2)))
 
-    # YOUR CODE HERE
+    """
+        t1 en t2 kunnen worden gebruikt voor het creeën van de verschillende startwaarden van theta.
+        In het hoorcollege is laten zien dat sommige startwaarden een andere hypothese oplevert.
+        Door een groot aantal te 'proberen' is de kans groter dat je een absoluut minimum krijgt
+        over een lokaal minimum.
+    """
+    for i, theta0 in enumerate(t1):
+        for j, theta1 in enumerate(t2):
+            # Hier maken we de waarde van theta door ze te combineren.
+            theta = np.array([theta0, theta1])
+            # Vervolgens berekenen we de kosten en zetten deze in de 'J_vals'.
+            J = compute_cost(X, y, theta)
+            J_vals[i][j] = J[0]
 
     surf = ax.plot_surface(T1, T2, J_vals, rstride=1, cstride=1,
                            cmap=cm.coolwarm, linewidth=0, antialiased=False)
