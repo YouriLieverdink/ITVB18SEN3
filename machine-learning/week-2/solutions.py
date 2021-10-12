@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 from scipy.sparse import csr_matrix
 
 # ==== OPGAVE 1 ====
@@ -93,9 +94,28 @@ def get_y_matrix(y, m):
     # y_i=10, dan is regel i in de matrix [0,0,...1] (in dit geval is de breedte
     # van de matrix 10 (0-9), maar de methode moet werken voor elke waarde van
     # y en m
+    """
+        We halen hier de maximale waarde op uit de y vector. Deze waarde bepaald namelijk de grote
+        van de rijen binnen onze matrix.
+    """
+    n = max(y)[0]
 
-    # YOUR CODE HERE
-    pass
+    """
+        Hier maken we een nieuwe matrix aan. Deze dimensies van deze matrix zijn gebaseerd op de
+        meegegeven parameters. Deze matrix met nullen zal straks voor een deel worden gevuld met
+        enen.
+    """
+    matrix = np.zeros((m, n))
+
+    """
+        We lopen hier door elke waarde van y heen. Dit is altijd een waarde tussen 1 en n. In de rij
+        waar we nu zijn moeten we de (n)de waarde op 1 zetten. Dit betekent dus dat we 1 af moeten
+        trekken van de waarde om de index te krijgen. Deze zetten we dan simpelweg op 1.
+    """
+    for i, v in enumerate(y):
+        matrix[i][v - 1] = 1
+
+    return matrix
 
 # ==== OPGAVE 2c ====
 # ===== deel 1: =====
