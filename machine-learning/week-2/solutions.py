@@ -75,8 +75,13 @@ def sigmoid(z):
     # voor dat de code zowel werkt wanneer z een getal is als wanneer z een
     # vector is.
     # Maak gebruik van de methode exp() in NumPy.
+    """
+        We berekenen hier de onderkant van de functie door middel van de functie np.exp. Wat deze
+        functie doet is, het kwadrateerd het getal (e) met de waarde die wordt meegegeven.
+    """
+    demoniator = 1 + np.exp(-z)
 
-    pass
+    return 1 / demoniator
 
 
 # ==== OPGAVE 2b ====
