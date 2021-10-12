@@ -50,6 +50,16 @@ def compute_cost(X, y, theta):
 
     J = 0
 
+    # data_points = len(X)
+    # for index, value in enumerate(X):
+    #     # voorspelling ho(x)
+    #     prediction = theta[0] + theta[1] * value[1]
+    #     # verschil met werkelijke waarden y
+    #     J += (prediction - y[index]) ** 2
+
+    # # totaal delen door het aantal data punten x 2
+    # return J / (2 * data_points)
+
     """
         1.
         Het attribuut 'shape' bevat de dimensies van een matrix. De eerste waarde die je terugkrijgt 
@@ -221,9 +231,11 @@ def contour_plot(X, y):
     for i, theta0 in enumerate(t1):
         for j, theta1 in enumerate(t2):
             # Hier maken we de waarde van theta door ze te combineren.
-            theta = np.array([theta0, theta1])
+            theta = np.array([
+                [theta0, theta1],
+            ])
             # Vervolgens berekenen we de kosten en zetten deze in de 'J_vals'.
-            J = compute_cost(X, y, theta)
+            J = compute_cost(X, y, theta.T)
             J_vals[i][j] = J[0]
 
     surf = ax.plot_surface(T1, T2, J_vals, rstride=1, cstride=1,
