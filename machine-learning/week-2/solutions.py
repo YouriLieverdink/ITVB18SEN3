@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import math
 from scipy.sparse import csr_matrix
 
 # ==== OPGAVE 1 ====
@@ -38,7 +39,7 @@ def plot_number(nrVector):
         ]
 
         # 3. Deze vector wordt vervolgens getransponeerd en dan is het uiteindelijke resultaat dit:
-        [   
+        [
             [1, 1, 1, 1, 0, 1, 1, 0, 1],
         ]
 
@@ -143,11 +144,29 @@ def predict_number(Theta1, Theta2, X):
 
     # Voeg enen toe aan het begin van elke stap en reshape de uiteindelijke
     # vector zodat deze dezelfde dimensionaliteit heeft als y in de exercise.
+    m, n = X.shape
 
-    pass
+    """
+        # 1.
+    """
+    a1 = np.c_[np.ones(m), X[:]]
 
+    """
+        # 2.
+    """
+    a2 = sigmoid(np.dot(Theta1, a1.T))
+    a2 = np.c_[np.ones(m), a2.T[:]]
+
+    """
+        # 3.
+    """
+    a3 = sigmoid(np.dot(Theta2, a2.T))
+
+    return a3.T
 
 # ===== deel 2: =====
+
+
 def compute_cost(Theta1, Theta2, X, y):
     # Deze methode maakt gebruik van de methode predictNumber() die je hierboven hebt
     # geïmplementeerd. Hier wordt het voorspelde getal vergeleken met de werkelijk
@@ -157,11 +176,25 @@ def compute_cost(Theta1, Theta2, X, y):
     # Let op: de y die hier binnenkomt is de m×1-vector met waarden van 1...10.
     # Maak gebruik van de methode get_y_matrix() die je in opgave 2a hebt gemaakt
     # om deze om te zetten naar een matrix.
+    prediction = predict_number(Theta1, Theta2, X)
+    m, n = prediction.shape
+    actual = get_y_matrix(y, m)
 
-    pass
+    J = 0
 
+    for i in range(m):
+        for j in range(n):
+
+            h = prediction[i][j]
+            v = actual[i][j]
+
+            J += v * -math.log(h) + (1 - v) * -math.log(1 - h)
+
+    return J / m
 
 # ==== OPGAVE 3a ====
+
+
 def sigmoid_gradient(z):
     # Retourneer hier de waarde van de afgeleide van de sigmoïdefunctie.
     # Zie de opgave voor de exacte formule. Zorg ervoor dat deze werkt met
