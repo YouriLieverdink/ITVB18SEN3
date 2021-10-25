@@ -19,12 +19,31 @@ def draw_graph(data):
     # Om deze constructie in dit specifieke geval te kunnen gebruiken, moet de data-matrix wel eerst
     # roteren (waarom?).
     # Maak gebruik van pytplot.scatter om dit voor elkaar te krijgen.
+    """
+        Om gebruik te maken van de bovenstaande constructie moeten we inderdaad de matrix roteren.
+        We krijgen hem namelijk zo binnen. Hierbij moet de eeste kolom de x voorstellen en de 
+        tweede kolom de y.
 
-    # YOUR CODE HERE
-    for l in data:
-        x, y = l
-        plt.scatter(x, y)
+        X = [
+            [x-waarde y-waarde]
+            [x-waarde y-waarde]
+            [x-waarde y-waarde]
+            ...
+        ]
 
+        Als we alle x-waarden en alle y-waarden in 1 keer willen toekennen moeten we matrix roteren
+        zodat deze in de goede volgorde komen te staan. Zie hier.
+
+        X = [
+            [x-waarde x-waarde x-waarde ...]
+            [y-waarde y-waarde y-waarde ...]
+        ]
+
+        Wanneer dan de bovenstaande constructie wordt toegepast worden alle x-waarden in het 
+        variabele x gezet en alle y-waarden in het variabele y.
+    """
+    x, y = data.T
+    plt.scatter(x, y)
     plt.show()
 
 
