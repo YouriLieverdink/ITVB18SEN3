@@ -144,25 +144,20 @@ def predict_number(Theta1, Theta2, X):
 
     # Voeg enen toe aan het begin van elke stap en reshape de uiteindelijke
     # vector zodat deze dezelfde dimensionaliteit heeft als y in de exercise.
-    m, n = X.shape
+    """ Input layer """
+    a1 = X
+    a1 = np.insert(a1, 0, 1, axis=1)
 
-    """
-        # 1.
-    """
-    a1 = np.c_[np.ones(m), X[:]]
+    """ Hidden layer """
+    z2 = np.dot(Theta1, a1[:].T).T
+    a2 = sigmoid(z2)
+    a2 = np.insert(a2, 0, 1, axis=1)
 
-    """
-        # 2.
-    """
-    a2 = sigmoid(np.dot(Theta1, a1.T))
-    a2 = np.c_[np.ones(m), a2.T[:]]
+    """ Output layer"""
+    z3 = np.dot(Theta2, a2[:].T).T
+    a3 = sigmoid(z3)
 
-    """
-        # 3.
-    """
-    a3 = sigmoid(np.dot(Theta2, a2.T))
-
-    return a3.T
+    return a3
 
 # ===== deel 2: =====
 
