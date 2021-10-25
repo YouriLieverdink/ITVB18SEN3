@@ -203,13 +203,40 @@ def nn_check_gradients(Theta1, Theta2, X, y):
     # Retourneer de gradiënten van Theta1 en Theta2, gegeven de waarden van X en van y
     # Zie het stappenplan in de opgaven voor een mogelijke uitwerking.
 
+    # X.shape = (5000, 400)
+    # y.shape = (5000, 1)
+
+    # Theta1.shape = (25, 401)
     Delta2 = np.zeros(Theta1.shape)
+    # Theta2.shape = (10, 26)
     Delta3 = np.zeros(Theta2.shape)
-    m = 1  # voorbeeldwaarde; dit moet je natuurlijk aanpassen naar de echte waarde van m
+
+    m = X.shape[0]
+    y_matrix = get_y_matrix(y, m)
 
     for i in range(m):
-        # YOUR CODE HERE
-        pass
+        # Forwards.
+        a1 = X[i].reshape(1, 400)
+        a1 = np.insert(a1, 0, 1, axis=1)
+
+        z2 = np.dot(Theta1, a1[:].T).T
+        a2 = sigmoid(z2)
+        a2 = np.insert(a2, 0, 1, axis=1)
+
+        z3 = np.dot(Theta2, a2[:].T).T
+        a3 = sigmoid(z3)
+
+        # Backwards.
+        d3 = (a3 - y_matrix[i]).T  # d3.shape = (10, 1)
+
+        grad_2 = sigmoid_gradient(z2)
+        grad_2 = np.insert(grad_2, 0, 1, axis=1).T
+
+        d2 = np.dot(Theta2.T, d3) * grad_2  # d2.shape = (26, 1)
+        d2 = d2[1:, :]  # d2.shape = (25, 1)
+
+        Delta3 = Delta3 + d3 * a2
+        Delta2 = Delta2 + d2 * a1
 
     Delta2_grad = Delta2 / m
     Delta3_grad = Delta3 / m
