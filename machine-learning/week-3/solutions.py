@@ -26,8 +26,7 @@ def scale_data(X):
     # Deel alle elementen in de matrix 'element wise' door de grootste waarde in deze matrix.
 
     # YOUR CODE HERE
-
-    pass
+    return X / np.amax(X)
 
 # OPGAVE 1c
 
