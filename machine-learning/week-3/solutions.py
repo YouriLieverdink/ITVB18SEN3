@@ -83,10 +83,29 @@ def conf_els(conf, labels):
     # Check de documentatie van numpy diagonal om de eerste waarde te bepalen.
     # https://numpy.org/doc/stable/reference/generated/numpy.diagonal.html
 
-    # YOUR CODE HERE
-    pass
+    n = len(labels)
+    results = []
 
-# OPGAVE 2c
+    for i, label in enumerate(labels):
+        # True positives.
+        TP = conf[i][i]
+
+        # False positives.
+        FP = 0 - TP
+        for l in range(n):
+            FP += conf[i][l]
+
+        # False negatives.
+        FN = 0 - TP
+        for l in range(n):
+            FN += conf[l][i]
+
+        # True negatives.
+        TN = np.sum(conf) - TP - FP - FN
+
+        results.append((label, TP, FP, FN, TN))
+
+    return results
 
 
 def conf_data(metrics):
@@ -97,13 +116,18 @@ def conf_data(metrics):
 
     # VERVANG ONDERSTAANDE REGELS MET JE EIGEN CODE
 
-    tp = 1
-    fp = 1
-    fn = 1
-    tn = 1
+    tp = sum([x[1] for x in metrics])
+    fp = sum([x[2] for x in metrics])
+    fn = sum([x[3] for x in metrics])
+    tn = sum([x[4] for x in metrics])
 
     # BEREKEN HIERONDER DE JUISTE METRIEKEN EN RETOURNEER DIE
     # ALS EEN DICTIONARY
 
-    rv = {'tpr': 0, 'ppv': 0, 'tnr': 0, 'fpr': 0}
+    tpr = tp / (tp + fn)
+    ppv = tp / (tp + fp)
+    tnr = tn / (tn + fp)
+    fpr = fp / (fp + tn)
+
+    rv = {'tpr': tpr, 'ppv': ppv, 'tnr': tnr, 'fpr': fpr}
     return rv
